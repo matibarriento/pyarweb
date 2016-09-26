@@ -1,13 +1,27 @@
-FROM python:3.4-wheezy
+FROM ubuntu:14.04
 
-VOLUME ["/opt/code"]
+ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y apt-utils cmake gcc make tk-dev libjpeg-dev zlib1g-dev libtiff5-dev libfreetype6-dev liblcms2-dev libwebp-dev libtk-img-doc libopenjpeg-dev
+RUN apt-get -qq update && apt-get install -y  --no-install-recommends \
+    build-essential \
+    git \
+    python3 \
+    python3-dev \
+    gettext \
+    libpq-dev \
+    libffi-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libpng12-dev \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
-ADD ./scripts/install-openjpeg.sh /tmp/
-RUN /tmp/install-openjpeg.sh
+RUN mkdir /code
+WORKDIR /code
 
-COPY ./scripts/webcli.py /webcli
-
-CMD [ "/bin/bash" ]
-EXPOSE 8000
+ADD . /code/
+RUN pip3 install -U pip setuptools
+RUN pip3 install -r requirements.txt

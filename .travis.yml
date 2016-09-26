@@ -1,16 +1,13 @@
+sudo: required
+
 language: python
 
-sudo: false
+services:
+  - docker
 
-python:
-  - "3.3"
-  - "3.4"
-
-env:
-  - DJANGO<1.8
-
-install:
-  - pip install -r requirements.txt
+before_script:
+  - docker-compose build 
 
 script:
-  - python manage.py test
+  - docker-compose run web python3 manage.py test
+

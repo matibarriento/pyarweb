@@ -1,4 +1,7 @@
-*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints
 *.swp
 *.swo
 .venv
@@ -6,9 +9,7 @@ db.sqlite3
 waliki_data
 waliki_attachments
 media
-.vagrant
 src
 pyarweb
 celerybeat-schedule
 local_settings.py
-run-docker.sh
