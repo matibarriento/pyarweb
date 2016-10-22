@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 from allauth.account.signals import user_signed_up
 from waliki.models import ACLRule
 from django.contrib.auth.models import Permission
@@ -25,9 +26,15 @@ def create_acl_for_user_wiki_own_page(sender, **kwargs):
         rule.users.add(user)
 
 
+def is_active_default():
+    # Use True if we don't want to moderate.
+    # If we want to, set to False and wait a moderator to put it in True
+    return not settings.TELEGRAM_MODERATION
+
+
 class ModerateModel(models.Model):
 
-    approved = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=is_active_default)
     ts_moderate = models.DateTimeField(null=True, blank=True)
     user_moderate = models.TextField(null=True, blank=True)
 

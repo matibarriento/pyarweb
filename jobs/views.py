@@ -60,7 +60,7 @@ class JobCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        form.instance.is_active = True
+        # form.instance.is_active = True
         return super(JobCreate, self).form_valid(form)
 
 

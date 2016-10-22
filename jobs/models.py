@@ -1,9 +1,13 @@
 from autoslug import AutoSlugField
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext as _
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from pycompanies.models import Company
+from community.models import ModerateModel
 from taggit_autosuggest.managers import TaggableManager
 from model_utils.models import TimeStampedModel
 
@@ -22,7 +26,7 @@ class JobQuerySet(models.QuerySet):
         return self.filter(is_active=True)
 
 
-class Job(models.Model):
+class Job(ModerateModel):
     """A PyAr Job."""
 
     title = models.CharField(max_length=255, verbose_name=_('Título'))
@@ -47,7 +51,6 @@ class Job(models.Model):
         choices=JOB_SENIORITIES,
         verbose_name=_('Experiencia'))
     slug = AutoSlugField(populate_from='title', unique=True)
-    is_active = models.BooleanField(default=True)
 
     objects = JobQuerySet.as_manager()
 
@@ -63,6 +66,16 @@ class Job(models.Model):
 
     class Meta:
         ordering = ['-created']
+
+
+def send_telegram_message(moderated_model):
+    print('New job:', moderated_model.title)
+
+
+@receiver(post_save, sender=Job)
+def job_updated(sender, instance, created, **kwargs):
+    if created and settings.TELEGRAM_MODERATION:
+        send_telegram_message(instance)
 
 
 class JobInactivated(TimeStampedModel):

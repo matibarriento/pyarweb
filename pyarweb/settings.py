@@ -248,3 +248,5 @@ if RAVEN_CONFIG:
         # ...
             'raven.contrib.django.raven_compat',
             )
+
+TELEGRAM_MODERATION = True
